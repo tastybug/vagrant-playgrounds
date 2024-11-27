@@ -18,9 +18,8 @@ Vagrant.configure("2") do |config|
     ubuntu.vm.network "private_network", ip: "192.168.56.101"
   end
 
-  # specific for rocky
-    config.vm.define "rocky" do |rocky|
-    rocky.vm.box = "rockylinux/8"
+  config.vm.define "rocky" do |rocky|
+    rocky.vm.box = "rockylinux/9"
     rocky.vm.hostname = "rocky"
     rocky.vm.network "private_network", ip: "192.168.56.103"
   end
