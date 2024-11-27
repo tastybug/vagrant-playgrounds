@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#Place Vagrantfile in the directory you run vagrant from.
+#This should also contain ubuntu.yml which configure VMs
+
+# setting for all VMs
+Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 1
+  end
+
+  config.vm.define "ubuntu" do |ubuntu|
+    ubuntu.vm.box = "ubuntu/focal64"
+    ubuntu.vm.provision "ansible_local", playbook: "ubuntu.yml"
+    ubuntu.vm.hostname = "ubuntu"
+    ubuntu.vm.network "private_network", ip: "192.168.56.101"
+  end
+
+  # specific for rocky
+    config.vm.define "rocky" do |rocky|
+    rocky.vm.box = "rockylinux/8"
+    rocky.vm.hostname = "rocky"
+    rocky.vm.network "private_network", ip: "192.168.56.103"
+  end
+end
