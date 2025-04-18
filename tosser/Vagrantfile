@@ -8,14 +8,14 @@
 Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
     v.memory = 2048
-    v.cpus = 2
+    v.cpus = 1
   end
 
-  # specific for ubuntu1
-  config.vm.define "playground" do |ubuntu1|
-    ubuntu1.vm.box = "ubuntu/focal64"
-    ubuntu1.vm.provision "ansible_local", playbook: "ubuntu_with_docker.yml"
-    ubuntu1.vm.hostname = "playground"
-    ubuntu1.vm.network "private_network", ip: "192.168.60.120"
+  # specific for tosser
+  config.vm.define "playground" do |tosser|
+    tosser.vm.box = "ubuntu/jammy64"
+    tosser.vm.provision "ansible_local", playbook: "ubuntu_with_docker.yml"
+    tosser.vm.hostname = "playground"
+    tosser.vm.network "private_network", ip: "192.168.60.120"
   end
 end
