@@ -1,0 +1,82 @@
+# Place in directory you run Vagrant from, alongside the Vagrantfile
+- name: Configure Ubuntu
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Update Package Cache and Upgrade Existing Packages
+      apt:
+        update_cache: true
+        upgrade: true
+
+    - name: Ensure SSH Allows Password Authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: PasswordAuthentication yes
+        regexp: '^PasswordAuthentication .*$'
+      notify: RestartSSH
+    - name: correct multipathd
+      copy:
+        dest: /etc/multipath.conf
+        content: |
+          defaults {
+            user_friendly_names yes
+          }
+          blacklist {
+            devnode "^sd[a-b]"      
+          }
+      notify: RestartMP
+    - name: Install required packages for Docker
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker apt repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+        filename: docker
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: Ensure Docker service is running and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add vagrant user to docker group
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
+    - name: Ensure docker group exists
+      group:
+        name: docker
+        state: present
+
+  handlers:
+    - name: RestartSSH
+      service:
+        name: ssh
+        state: restarted
+    - name: RestartMP
+      service:
+        name: multipathd
+        state: restarted
