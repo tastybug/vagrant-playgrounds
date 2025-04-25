@@ -1,0 +1,46 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#Place Vagrantfile in the directory you run vagrant from.
+#This should also contain ubuntu.yml which configure VMs
+
+# setting for all VMs
+Vagrant.configure("2") do |config|
+
+  config.vm.define "jumpbox" do |jumpbox|
+    jumpbox.vm.box = "ubuntu/focal64"
+    jumpbox.vm.provision "ansible_local", playbook: "ubuntu.yml"
+    jumpbox.vm.hostname = "jumpbox"
+    jumpbox.vm.network "private_network", ip: "192.168.60.125"
+
+	jumpbox.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+      vb.cpus = 1
+	end
+  end
+
+  config.vm.define "cp" do |cp|
+    cp.vm.box = "ubuntu/focal64"
+    cp.vm.provision "ansible_local", playbook: "ubuntu.yml"
+    cp.vm.hostname = "cp"
+    cp.vm.network "private_network", ip: "192.168.60.126"
+
+    cp.vm.provider "virtualbox" do |vb|
+      vb.memory = 4096
+      vb.cpus = 3 
+    end 
+  end
+
+  config.vm.define "wrk" do |wrk|
+    wrk.vm.box = "ubuntu/focal64"
+    wrk.vm.provision "ansible_local", playbook: "ubuntu.yml"
+    wrk.vm.hostname = "wrk"
+    wrk.vm.network "private_network", ip: "192.168.60.127"
+
+    wrk.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+      vb.cpus = 1 
+    end 
+  end 
+
+end
