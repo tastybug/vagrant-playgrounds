@@ -60,16 +60,16 @@
         state: started
         enabled: yes
 
+    - name: Ensure docker group exists
+      group:
+        name: docker
+        state: present
+
     - name: Add vagrant user to docker group
       user:
         name: vagrant
         groups: docker
         append: yes
-
-    - name: Ensure docker group exists
-      group:
-        name: docker
-        state: present
 
   handlers:
     - name: RestartSSH
